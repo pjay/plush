@@ -1,0 +1,15 @@
+@(appForm: Form[Tuple5[String, Int, Boolean, Option[String], Option[String]]])(implicit flash: Flash)
+
+@javascripts = {
+  <script>
+  $(document).ready(function() {
+    $("input[type='text']:first", document.forms[0]).focus()
+  });
+  </script>
+}
+
+@main("Create an application", javascripts = javascripts) {
+  <h2>Create an application</h2>
+  @_formErrors(appForm)
+  @_form(None, appForm)
+}

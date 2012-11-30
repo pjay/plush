@@ -1,0 +1,40 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Apps.index
+
+# API
+PUT     /api/device_tokens/:value   controllers.Api.createDeviceToken(value: String)
+DELETE  /api/device_tokens/:value   controllers.Api.deleteDeviceToken(value: String)
+PUT     /api/registrations/:value   controllers.Api.createRegistration(value: String)
+DELETE  /api/registrations/:value   controllers.Api.deleteRegistration(value: String)
+
+# Users
+GET     /users                      controllers.Users.index
+GET     /users/login                controllers.Users.login
+POST    /users/login                controllers.Users.authenticate
+POST    /users/logout               controllers.Users.logout
+
+# Applications
+GET     /apps                       controllers.Apps.index
+GET     /apps/add                   controllers.Apps.add
+POST    /apps/create                controllers.Apps.create
+GET     /apps/:key                  controllers.Apps.show(key: String)
+GET     /apps/:key/edit             controllers.Apps.edit(key: String)
+POST    /apps/:key/update           controllers.Apps.update(key: String)
+POST    /apps/:key/delete           controllers.Apps.delete(key: String)
+
+# Device tokens
+GET     /apps/:key/device_tokens    controllers.DeviceTokens.index(key: String)
+
+# Registrations
+GET     /apps/:key/registrations    controllers.Registrations.index(key: String)
+
+# Push
+GET     /push/broadcast/:key        controllers.Push.broadcast(key: String)
+POST    /push/broadcast/:key        controllers.Push.sendBroadcast(key: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

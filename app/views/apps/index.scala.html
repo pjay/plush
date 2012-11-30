@@ -1,0 +1,20 @@
+@(apps: List[App])(implicit flash: Flash)
+
+@main("My applications") {
+
+  <h2>My applications</h2>
+  @if(!apps.isEmpty) {
+    <ul>
+      @for(app <- apps) {
+        <li><a href="@routes.Apps.show(app.key)">@app.name</a></li>
+      }
+    </ul>
+  } else {
+    <p>You don't have any applications yet.</p>
+  }
+
+  <p>
+  <a href="@routes.Apps.add">Create an application</a>
+  </p>
+
+}

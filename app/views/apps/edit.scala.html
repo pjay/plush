@@ -1,0 +1,21 @@
+@(app: App, appForm: Form[Tuple5[String, Int, Boolean, Option[String], Option[String]]])(implicit flash: Flash)
+
+@import helper._
+
+@main("Edit " + app.name) {
+  <h2>Edit @app.name</h2>
+  @_formErrors(appForm)
+  @_form(Some(app), appForm)
+
+  @form(action = routes.Apps.delete(app.key), 'onsubmit -> "return confirm('Really?')") {
+    <div class="danger-zone">
+      <h3>Danger Zone</h3>
+      <h4>Delete this application</h4>
+      <p>
+        Deleting an app is an irreversible action. All associated data such as registered iOS
+        &amp; Android devices will also be deleted.<br>
+        <input type="submit" value="I'm sure, delete it!">
+      </p>
+    </div>
+  }
+}

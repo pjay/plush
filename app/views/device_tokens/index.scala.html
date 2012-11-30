@@ -1,0 +1,32 @@
+@(app: App, deviceTokens: List[DeviceToken])(implicit flash: Flash)
+
+@main("iOS device tokens for " + app.name) {
+
+  <h2>iOS device tokens for @app.name</h2>
+  @if(!deviceTokens.isEmpty) {
+    <table>
+      <thead>
+        <tr>
+          <td>Device token</td>
+          <td>Last registration time</td>
+        </tr>
+      </thead>
+      <tbody>
+        @for(t <- deviceTokens) {
+          <tr>
+            <td>@t.value.toUpperCase</td>
+            <td>@t.lastRegistrationDate</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } else {
+    <p>No device tokens registered yet.</p>
+  }
+
+  <p>
+    <a href="@routes.Apps.show(app.key)">Back to @app.name</a>
+  </p>
+
+}
+

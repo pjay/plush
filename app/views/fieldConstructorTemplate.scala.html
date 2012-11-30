@@ -1,0 +1,9 @@
+@(elements: helper.FieldElements)
+
+<dt><label for="@elements.id">@elements.label</label></dt>
+<dd@if(elements.hasErrors){ class="error"}>
+  @elements.input
+  @if(elements.hasErrors) {
+    <span class="errors">@elements.errors.mkString(", ")</span>
+  }
+</dd>

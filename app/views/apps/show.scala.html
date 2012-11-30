@@ -1,0 +1,72 @@
+@(app: App)(implicit flash: Flash)
+
+@main(app.name) {
+
+  <h2>@app.name</h2>
+  <dl id="app-details">
+    <dt>Application key</dt>
+    <dd>@app.key</dd>
+    <dt>Application secret</dt>
+    <dd>@app.secret</dd>
+    <dt>Application master secret</dt>
+    <dd>@app.masterSecret</dd>
+    <dt>iOS application mode</dt>
+    <dd>
+      @(if(app.appMode == 0) { "Development, connecting to Apple sandbox servers" }
+        else if (app.appMode == 1) { "Production, connecting to Apple production servers" }
+        else { "Unknown" })
+    </dd>
+    <dt>iOS debug mode</dt>
+    <dd>@if(app.debugMode){ Yes } else { No }</dd>
+    <dt>Android GCM API Key</dt>
+    <dd>@if(app.gcmApiKey){ @app.gcmApiKey } else { None }</dd>
+  </dl>
+
+  <h3>Statistics</h3>
+  <dl id="app-stats">
+    <dt>Number of active iOS device tokens</dt>
+    <dd>
+      @DeviceToken.countAllByAppKey(app.key)
+      (<a href="@routes.DeviceTokens.index(app.key)">display all</a>)
+    </dd>
+    <dt>Number of active Android registrations</dt>
+    <dd>
+      @Registration.countAllByAppKey(app.key)
+      (<a href="@routes.Registrations.index(app.key)">display all</a>)
+    </dd>
+  </dl>
+
+  <h3>Actions</h3>
+  <ul>
+    <li><a href="@routes.Push.broadcast(app.key)">Send a broadcast notification</a></li>
+    <li><a href="@routes.Apps.edit(app.key)">Edit this application</a></li>
+  </ul>
+
+  <h3>Latest events</h3>
+  @if(Event.countAllByAppKey(app.key) > 0) {
+    <table id="events" cellspacing="0" cellpadding="0">
+      <thead>
+        <tr>
+          <td class="col1">Date</td>
+          <td class="col2">Severity</td>
+          <td>Message</td>
+        </tr>
+      </thead>
+      <tbody>
+        @for(event <- Event.findAllByAppKey(app.key, 0, 10)) {
+          <tr class="@event.severityString">
+            <td class="col1">@event.date</td>
+            <td class="col2">@event.severityString.toUpperCase</td>
+            <td>@event.message</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p>
+      <a href="#">Display all events</a>
+    </p>
+  } else {
+    <p>No events recorded yet.</p>
+  }
+}

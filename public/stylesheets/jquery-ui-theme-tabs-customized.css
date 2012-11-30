@@ -1,0 +1,32 @@
+#tabs-min {
+  background: transparent;
+  border: none;
+}
+#tabs-min .ui-widget-header {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #c0c0c0;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+}
+#tabs-min .ui-state-default {
+  background: transparent;
+  border: none;
+}
+#tabs-min li a {
+  border-bottom: none;
+}
+#tabs-min .ui-state-active {
+  background: transparent url(images/uiTabsArrow.png) no-repeat bottom center;
+  border: none;
+}
+#tabs-min .ui-state-default a {
+  color: #c0c0c0;
+}
+#tabs-min .ui-state-active a {
+  color: #467AA7;
+}
+#tabs-min.ui-tabs {
+  padding: 0;
+}

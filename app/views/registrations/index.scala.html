@@ -1,0 +1,32 @@
+@(app: App, registrations: List[Registration])(implicit flash: Flash)
+
+@main("Android registrations for " + app.name) {
+
+  <h2>Android registrations for @app.name</h2>
+  @if(!registrations.isEmpty) {
+    <table>
+      <thead>
+        <tr>
+          <td>Registration ID</td>
+          <td>Last registration time</td>
+        </tr>
+      </thead>
+      <tbody>
+        @for(t <- registrations) {
+          <tr>
+            <td>@t.value.toUpperCase</td>
+            <td>@t.lastRegistrationDate</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } else {
+    <p>No registrations yet.</p>
+  }
+
+  <p>
+    <a href="@routes.Apps.show(app.key)">Back to @app.name</a>
+  </p>
+
+}
+

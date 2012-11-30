@@ -1,0 +1,76 @@
+@(title: String, stylesheets: Html = Html(""), javascripts: Html = Html(""))(content: Html)(implicit flash: Flash)
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="author" content="Philippe Jayet" />
+  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/variant-light.css")" title="Variant Light" media="screen,projection" />
+  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/application.min.css")" />
+  @stylesheets
+  <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+  <title>plush - @title</title>
+</head>
+
+<body>
+<div id="header">
+  <div id="title">
+    <h1><a href="@routes.Apps.index">plush</a></h1>
+    <p class="slogan">Push notifications for mobile apps</p>
+  </div>
+</div>
+
+<div id="topmenu">
+  <p>
+    <strong class="hide">Main menu:</strong>
+    <a class="active" href="@routes.Apps.index">My applications</a><span class="hide"> | </span>
+    <a href="@routes.Users.logout">Log out</a>
+  </p>
+</div>
+
+<div id="wrap">
+  <!-- <div id="sidebar">
+    <ul class="sidemenu">
+      <li><a class="active" href="#">Active page</a></li>
+      <li><a href="#">Link two</a></li>
+      <li><a href="#">Link three</a></li>
+      <li><a href="#">Link four</a>
+        <ul>
+          <li><a href="#">Sub one</a></li>
+          <li><a href="#">Sub two</a></li>
+        </ul></li>
+      <li><a href="#">Link five</a></li>
+    </ul>
+
+    <h2>Sample link list</h2>
+    <p>Use ul class="sidemenu" for the menu above and a regular ul element for the kind of list below:</p>
+    <ul>
+      <li><a href="http://andreasviklund.com/learn/tutorial-building-your-first-website-using-a-free-website-template-part-1/">Template tutorial</a></li>
+      <li><a href="http://andreasviklund.com/templates/">More free templates</a></li>
+      <li><a href="http://andreasviklund.com/wordpress-themes/">WordPress themes</a></li>
+      <li><a href="http://www.svenskadomaner.se/order.asp?step=1&amp;ling=en&amp;ref=A">Domains and hosting</a></li>
+    </ul>
+  </div> -->
+
+  <div id="content">
+    <div class="post">
+      <!--<div class="postintro">Feb 17<br />2011</div>-->
+
+      @for((t, m) <- flash.data) {
+        <p class="flash @t">@m</p>
+      }
+
+      @content
+    </div>
+  </div>
+</div>
+
+<div id="footer">
+  <p>Copyright &copy; 2012 <a href="@routes.Apps.index">Philippe Jayet</a> | Template design by <a href="http://andreasviklund.com/">Andreas Viklund</a></p>
+</div>
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.2.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui-1.8.21.custom.min.js")"></script>
+@javascripts
+</body>
+</html>

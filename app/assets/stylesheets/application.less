@@ -1,0 +1,138 @@
+/* Mixins */
+
+.form-dl (@width) {
+  dt {
+    float: left;
+    width: @width;
+    padding-top: 5px;
+  }
+  dd {
+    margin: 0 0 5px @width;
+  }
+}
+
+.dl (@width) {
+  dt {
+    float: left;
+    width: @width;
+  }
+  dd {
+    margin: 0 0 2px @width;
+  }
+}
+
+/* General styling */
+
+table thead {
+  font-weight: bold;
+}
+
+/* Forms */
+
+form dl {
+  dd {
+    input[type="text"], input[type="password"] {
+      padding: 5px;
+      width: 300px;
+    }
+    span.errors {
+      color: red;
+    }
+  }
+  dd.error input {
+    border: 1px solid red;
+  }
+}
+
+form dl#login { .form-dl(80px); }
+form dl#users-create { .form-dl(150px); }
+form dl#new-app { .form-dl(180px); }
+form dl#app-broadcast { .form-dl(100px); }
+
+/* Apps */
+
+dl#app-details { .dl(200px); }
+dl#app-stats { .dl(255px); }
+
+/* Application broadcast */
+
+#tabs {
+  margin-bottom: 20px;
+}
+
+/* Edit app */
+
+.danger-zone {
+  margin-top: 30px;
+
+  h3 {
+    padding: 2px;
+    background: #fee;
+  }
+  h4 {
+    margin-bottom: 5px;
+  }
+}
+
+/* Events log */
+
+table#events {
+  width: 100%;
+  margin: 0 0 10px 0;
+  padding: 0;
+
+  td {
+    margin-bottom: 5px;
+    padding: 1px 3px;
+  }
+  td.col1 {
+    width: 130px;
+  }
+  td.col2 {
+    width: 70px;
+  }
+  .critical {
+    background-color: black;
+    color: white;
+  }
+  .error {
+    background-color: #ff8b8b;
+  }
+  .warning {
+    background-color: #ffd28b;
+  }
+  .info {
+    background-color: #eee;
+  }
+  .debug {
+    background-color: white;
+  }
+}
+
+/* Flash messages */
+
+p.flash {
+  padding: 5px;
+
+  &.success {
+    background-color: #efe;
+  }
+  &.error {
+    background-color: #fee;
+  }
+}
+
+/* Errors display */
+
+ul.errors {
+  margin: 0 0 10px;
+  padding: 5px;
+  list-style-type: none;
+  background-color: #fee;
+}
+
+/* Pagination */
+
+#pagination .previous-page {
+  margin-right: 15px;
+}

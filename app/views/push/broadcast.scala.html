@@ -1,0 +1,73 @@
+@(app: App, iosBroadcastForm: Form[Tuple3[Option[Int], Option[String], Option[String]]], gcmBroadcastForm: Form[Tuple2[String, String]])(implicit flash: Flash)
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(fieldConstructorTemplate.f) }
+
+@stylesheets = {
+  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui-theme-smoothness.css")" />
+  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui-theme-tabs-customized.css")" />
+}
+
+@selectedTab = @{ if (gcmBroadcastForm.hasErrors || gcmBroadcastForm.hasGlobalErrors) "1" else "0" }
+@javascripts = {
+  <script>
+  $("#tabs-min").tabs({ selected: @selectedTab });
+  </script>
+}
+
+@main("Send a broadcast notification", stylesheets = stylesheets, javascripts = javascripts) {
+
+  <h2>Send a broadcast notification</h2>
+
+  <div id="tabs-min">
+    <ul>
+      <li><a href="#fragment-1">iOS</a></li>
+      <li><a href="#fragment-2">Android</a></li>
+    </ul>
+    <div id="fragment-1">
+      @_formErrors(iosBroadcastForm)
+
+      @if(app.isIosEnabled) {
+        <p>The message will be sent to @DeviceToken.countAllByAppKey(app.key) iOS users.</p>
+        @form(routes.Push.sendBroadcast(app.key)) {
+          <input type="hidden" name="type" value="ios">
+          <dl id="app-broadcast">
+            @inputText(iosBroadcastForm("badge"), '_label -> "Badge")
+            @inputText(iosBroadcastForm("alert"), '_label -> "Alert")
+            @inputText(iosBroadcastForm("sound"), '_label -> "Sound")
+            <dd>
+              <input type="submit" value="Send broadcast"> or
+              <a href="@routes.Apps.show(app.key)">Cancel</a>
+            </dd>
+          </dl>
+        }
+      } else {
+        <p>Push notifications are disabled for the iOS platform. Please verify the certificate and its validity.</p>
+        <p><a href="@routes.Apps.show(app.key)">Back to @app.name</a></p>
+      }
+    </div>
+    <div id="fragment-2">
+      @_formErrors(gcmBroadcastForm)
+
+      @if(app.isGcmEnabled) {
+        <p>The message will be sent to @Registration.countAllByAppKey(app.key) Android users.</p>
+        @form(routes.Push.sendBroadcast(app.key)) {
+          <input type="hidden" name="type" value="gcm">
+          <dl id="app-broadcast">
+            @inputText(gcmBroadcastForm("extra_key"), '_label -> "Extra key")
+            @inputText(gcmBroadcastForm("extra_value"), '_label -> "Extra value")
+            <dd>
+              <input type="submit" value="Send broadcast"> or
+              <a href="@routes.Apps.show(app.key)">Cancel</a>
+            </dd>
+          </dl>
+        }
+      } else {
+        <p>Push notifications are disabled for the Android platform. Please verify the GCM API Key.</p>
+        <p><a href="@routes.Apps.show(app.key)">Back to @app.name</a></p>
+      }
+    </div>
+  </div>
+
+}

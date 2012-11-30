@@ -1,0 +1,67 @@
+/*
+Original design: Variant Light (v1.0 - Feb 17, 2010) - A free xhtml/css website template by Andreas Viklund.
+For more information, see http://andreasviklund.com/templates/variant-light/
+*/
+
+/* Main containers */
+body {padding:0; margin:0; font:84% Georgia,Times New Roman,serif; background-color:#f4f4f4; color:#555; text-align:center; line-height:1.5em;}
+#wrap {width:980px; text-align:left; margin:0 auto; padding:20px 0 0 0;}
+
+/* Header */
+#header {width:100%; margin:0; background-color:#fff; border-top:1px solid #dadada; border-bottom:1px solid #dadada;}
+#title {width:980px; padding:20px 0; margin:0 auto; text-align:left;}
+h1 {margin:0 auto 5px auto; padding:0; font-size:3em; font-weight:400; color:#777; line-height:1em; text-shadow:#ccc 2px 2px 8px;}
+h1 a {color:#a74646; font-weight:400; text-decoration:none; border:0;}
+h1 a:hover {color:#777; text-decoration:none; border:0;}
+.slogan {color:#467aa7; font-size:1.4em; margin:0; padding:0;}
+
+/* Top menu */
+#topmenu {text-align:center; margin:0; width:100%; background-color:#f0f0f0; border-bottom:1px solid #dadada;}
+#topmenu p {width:980px; text-align:left; font-size:1.2em; line-height:2.2em; color:#777; margin:0 auto; overflow:hidden;}
+#topmenu a {padding:12px 8px 9px 8px; font-weight:400; margin:0 20px 0 0; color:#555; border:0;}
+#topmenu a:hover {color:#444; background-color:#e8e8e8; text-decoration:none; text-shadow:#ccc 1px 1px 3px;}
+#topmenu a.active {color:#444; background-color:#dadada; text-shadow:#ccc 1px 1px 3px;}
+#topmenu a.active:hover {color:#444; padding:12px 8px 9px 8px;}
+
+/* HTML Tags */
+a {text-decoration:none; font-weight:400; color:#467aa7; border-bottom:1px solid #dadada;}
+a:hover {text-decoration:none; border-bottom:1px solid #467aa7;}
+a img {border:0;}
+h2 {margin:0 0 18px 0; padding:0 0 7px; color:#a74646; font-size:1.7em; font-weight:400; border-bottom:1px solid #dadada;}
+h2 a {font-weight:400;}
+h3 {font-size:1.5em; font-weight:400; margin:0 0 10px 0; padding:2px 0; color:#a74646; font-size:1.2em; font-weight:400; border-bottom:1px solid #dadada;}
+p {margin:0 0 18px 0;}
+ul {margin:0 0 18px 20px; padding:0;}
+li {margin:0; padding:0 0 0 5px;}
+
+/* Sidebars */
+#sidebar {width:220px; float:right; margin:0; padding:0; color:#777;}
+#sidebar h2 {font-size:1.3em; padding-bottom:3px; border-bottom:1px solid #dadada; margin-bottom:5px;}
+#sidebar ul {list-style:none; margin:0 0 15px 0;}
+#sidebar ul ul{list-style:none; margin:0 0 0 15px; font-size:0.9em;}
+#sidebar li {padding:0; margin:0;}
+#sidebar ul.sidemenu{width:220px; padding:0; margin:0 0 20px 0; border-top:1px solid #dadada;}
+#sidebar ul.sidemenu li a {color:#777; display:block; padding:5px 0 4px; margin:0; font-size:1.3em;}
+#sidebar ul.sidemenu li a:hover {color:#a74646; text-decoration:none; border-bottom:1px solid #dadada;}
+#sidebar ul.sidemenu li a.active{color:#467aa7;}
+#sidebar ul.sidemenu ul {width:200px; padding:0; margin:0 0 0 20px; border-top:0;}
+#sidebar ul.sidemenu ul li a {padding:2px 0; margin:0; font-size:1.1em;}
+
+/* Content area */
+#content {text-align:left; padding:0; margin:0 0 15px 0; /*width:730px*/ width:950px;}
+#content img {margin:5px 0;}
+#feature {margin:0 0 20px 0;}
+.post {margin:0 0 20px 0; padding:15px 20px 0 20px; /*width:690px*/ width:910px; line-height:1.7em; border:1px solid #dadada; background-color:#fff;}
+.postintro {width:70px; padding:4px; background-color:#f4f4f4; text-align:center; color:#777; font-size:1.1em; float:right; border:1px solid #dadada; margin:0 15px 10px 15px;}
+.postmeta {text-align:right; color:#666; padding:10px 0 0; border-top: 1px dotted #dadada; font-size:0.9em;}
+
+/* Footer */
+#footer{clear:both; width:100%; background-color:#f8f8f8; font-size:0.9em; line-height:1.8em; color:#777; font-weight:400; margin:20px 0; border-bottom:1px solid #dadada; border-top:1px solid #dadada;}
+#footer p {width:980px; margin:10px auto; text-align:left;}
+#footer a {color:#777; font-weight:400; text-decoration:none; border-bottom: 1px dotted #888;}
+
+/* Various classes */
+.headerimage {width:730px; height:175px; overflow:hidden;border:1px solid #dadada; margin-bottom:20px;}
+.centered {text-align:center;}
+.hide {display:none;}
+.clear {clear:both; visibility:hidden;}

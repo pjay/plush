@@ -1,0 +1,25 @@
+@(app: Option[App], appForm: Form[Tuple5[String, Int, Boolean, Option[String], Option[String]]])
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(fieldConstructorTemplate.f) }
+
+@action = @{ app map{ a => routes.Apps.update(a.key) } getOrElse routes.Apps.create }
+@submitLabel = @{ app map { a => "Update" } getOrElse "Create" }
+@cancelRoute = @{ app map { a => routes.Apps.show(a.key) } getOrElse routes.Apps.index }
+
+@form(action = action, 'enctype -> "multipart/form-data") {
+  <dl id="new-app">
+    @inputText(appForm("name"), '_label -> "Name")
+    <dt><label for="app_certificate">iOS P12 certificate</label></dt>
+    <dd><input type="file" name="certificate" id="app_certificate"></dd>
+    @if(app.isDefined) {
+      <dd><i>Leave empty to keep the existing certificate</i></dd>
+    }
+    @inputPassword(appForm("iosCertPassword"), '_label -> "iOS certificate password")
+    @select(field = appForm("appMode"), options = options("0" -> "Development", "1" -> "Production"), '_label -> "iOS application mode")
+    @checkbox(appForm("debugMode"), '_label -> "iOS debug mode")
+    @inputText(appForm("gcmApiKey"), '_label -> "Android GCM API key")
+    <dd><input type="submit" value="@submitLabel"> or <a href="@cancelRoute">Cancel</a></dd>
+  </dl>
+}
