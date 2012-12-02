@@ -44,12 +44,13 @@ As plush is a standard Play application, you can find detailed informations on h
 
 ### Using the Web admin interface
 
-Open your favorite browser and head to `http://<server_ip>:9000/`.
+Open your favorite browser and head to `http://<server_ip>:9000/users/add` to create a user.
 
 ### Using the API
 
 You need to create an app in the admin for all authentication keys/secrets to be generated. API calls for registering devices are authenticated using the app's key & secret. API calls for sending notifications need to use the master secret.
 **IMPORTANT: all mobile devices need to have the application key & secret embed, so that they can successfully register with the server. DO NOT include the master secret in your mobile applications, as it is not secure to do so.**
+
 Example uses of API calls using `curl` follow:
 
 #### Registering an iOS device
@@ -97,7 +98,6 @@ This project is still under active development. Basic features are already worki
 ## TODO
 
 Lots:
-* User authentication in the Web admin interface.
 * APIs for sending notifications.
 * Error handling when receiving a response from the GCM servers.
 * Analytics.
