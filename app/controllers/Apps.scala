@@ -71,8 +71,15 @@ object Apps extends Controller {
           app.update(attrs) match {
             case true => {
               moveCertificate(app)
-              // Stop the iOS workers of the modified app if either the certificate or its password has changed
-              if (request.body.file("certificate").isDefined || attrs.get("iosCertPassword").get != app.iosCertPassword) {
+              // Stop the iOS workers of the modified app if any of the following conditions occurs:
+              // * A new certificate has been uploaded
+              // * The certificate password has changed
+              // * The app mode has changed
+              // * The debug mode has changed
+              if (request.body.file("certificate").isDefined ||
+                  attrs.get("iosCertPassword").get != app.iosCertPassword ||
+                  attrs.get("appMode").get != app.appMode ||
+                  attrs.get("debugMode").get != app.debugMode) {
                 models.Push.stopIosWorkers(app)
               }
               Redirect(routes.Apps.show(app.key)).flashing("success" -> "Application successfully updated")

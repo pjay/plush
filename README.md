@@ -103,7 +103,6 @@ Lots:
 * Analytics.
 * Connecting to the APNS feedback service.
 * Pool of GCM workers.
-* Tune the java-apns connection type (Mina/Java NIO seems like a good candidate).
 * Better home page with a quick overview of all apps.
 * Implement the Akka supervision strategies.
 * Use Akka IO (or another non-blocking library) for sending iOS notifications, in order to drop the java-apns dependency.

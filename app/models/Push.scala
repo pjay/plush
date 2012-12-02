@@ -75,7 +75,8 @@ class GcmDispatcher extends Actor {
 
 class IosDispatchWorker(app: App) extends Actor {
 
-  val service = APNS.newService.withCert(app.certFile.getAbsolutePath, app.iosCertPassword.getOrElse("")).withSandboxDestination.build
+  val builder = APNS.newService.withCert(app.certFile.getAbsolutePath, app.iosCertPassword.getOrElse("")).withAppleDestination(app.appMode == 1).withReconnectPolicy(ReconnectPolicy.Provided.EVERY_HALF_HOUR).asPool(15)
+  val service = if (app.debugMode) builder.build else builder.withNoErrorDetection.build
   // TODO: test connection
 
   def receive = {
