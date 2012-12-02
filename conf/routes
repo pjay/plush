@@ -15,7 +15,9 @@ DELETE  /api/registrations/:value   controllers.Api.deleteRegistration(value: St
 GET     /users                      controllers.Users.index
 GET     /users/login                controllers.Users.login
 POST    /users/login                controllers.Users.authenticate
-POST    /users/logout               controllers.Users.logout
+GET     /users/logout               controllers.Users.logout
+GET     /users/add                  controllers.Users.add
+POST    /users/create               controllers.Users.create
 
 # Applications
 GET     /apps                       controllers.Apps.index

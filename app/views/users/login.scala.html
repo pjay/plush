@@ -1,0 +1,25 @@
+@(loginForm: Form[Tuple2[String, String]])(implicit flash: Flash)
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(fieldConstructorTemplate.f) }
+
+@javascripts = {
+  <script>
+  $(document).ready(function() {
+    $("input[type='text']:first", document.forms[0]).focus();
+  });
+  </script>
+}
+
+@main("Login", javascripts = javascripts) {
+  <h2>Login</h2>
+  @_formErrors(loginForm)
+  @form(action = routes.Users.authenticate) {
+    <dl id="login">
+      @inputText(loginForm("email"), '_label -> "E-mail")
+      @inputPassword(loginForm("password"), '_label -> "Password")
+      <dd><input type="submit" value="Login"></dd>
+    </dl>
+  }
+}

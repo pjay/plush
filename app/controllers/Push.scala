@@ -8,7 +8,7 @@ import play.api.data.Forms._
 import models._
 import views._
 
-object Push extends Controller {
+object Push extends Controller with Secured {
 
   val iosBroadcastForm = Form(
     tuple(
@@ -28,13 +28,13 @@ object Push extends Controller {
       "extra_value" -> nonEmptyText
     ))
 
-  def broadcast(appKey: String) = Action { implicit request =>
+  def broadcast(appKey: String) = withAuth { username => implicit request =>
     App.findByKey(appKey).map { app =>
       Ok(html.push.broadcast(app, iosBroadcastForm, gcmBroadcastForm))
     } getOrElse NotFound
   }
 
-  def sendBroadcast(appKey: String) = Action(parse.urlFormEncoded) { implicit request =>
+  def sendBroadcast(appKey: String) = withAuth(parse.urlFormEncoded) { username => implicit request =>
     App.findByKey(appKey).map { app =>
       request.body.get("type") match {
         case Some(Seq("ios")) => {

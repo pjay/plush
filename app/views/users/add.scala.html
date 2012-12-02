@@ -1,0 +1,26 @@
+@(userForm: Form[Tuple3[String, String, String]])(implicit flash: Flash)
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(fieldConstructorTemplate.f) }
+
+@javascripts = {
+  <script>
+  $(document).ready(function() {
+    $("input[type='text']:first", document.forms[0]).focus();
+  });
+  </script>
+}
+
+@main("New user", javascripts = javascripts) {
+  <h2>New user</h2>
+  @_formErrors(userForm)
+  @form(action = routes.Users.create) {
+    <dl id="users-create">
+      @inputText(userForm("email"), '_label -> "E-mail")
+      @inputPassword(userForm("password"), '_label -> "Password")
+      @inputPassword(userForm("passwordConfirmation"), '_label -> "Confirm your password")
+      <dd><input type="submit" value="Create user"></dd>
+    </dl>
+  }
+}

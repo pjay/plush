@@ -9,7 +9,7 @@ import play.api.libs._
 import models._
 import views._
 
-object Apps extends Controller {
+object Apps extends Controller with Secured {
 
   // TODO: certificate validation
   val appForm = Form(
@@ -22,21 +22,21 @@ object Apps extends Controller {
     )
   )
 
-  def index = Action { implicit request =>
+  def index = withAuth { username => implicit request =>
     Ok(html.apps.index(App.all))
   }
 
-  def show(key: String) = Action { implicit request =>
+  def show(key: String) = withAuth { username => implicit request =>
     App.findByKey(key) map { app =>
       Ok(html.apps.show(app))
     } getOrElse NotFound
   }
 
-  def add = Action { implicit request =>
+  def add = withAuth { username => implicit request =>
     Ok(html.apps.add(appForm))
   }
 
-  def create = Action(parse.multipartFormData) { implicit request =>
+  def create = withAuth(parse.multipartFormData) { username => implicit request =>
     appForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.apps.add(formWithErrors)),
       values => {
@@ -54,14 +54,14 @@ object Apps extends Controller {
     )
   }
 
-  def edit(key: String) = Action { implicit request =>
+  def edit(key: String) = withAuth { username => implicit request =>
     App.findByKey(key) map { app =>
       val values = (app.name, app.appMode, app.debugMode, app.iosCertPassword, app.gcmApiKey)
       Ok(html.apps.edit(app, appForm.fill(values)))
     } getOrElse NotFound
   }
 
-  def update(key: String) = Action(parse.multipartFormData) { implicit request =>
+  def update(key: String) = withAuth(parse.multipartFormData) { username => implicit request =>
     App.findByKey(key) map { app =>
       appForm.bindFromRequest.fold(
         formWithErrors => BadRequest(html.apps.edit(app, formWithErrors)),
@@ -91,7 +91,7 @@ object Apps extends Controller {
     } getOrElse NotFound
   }
 
-  def delete(key: String) = Action {
+  def delete(key: String) = withAuth { username => implicit request =>
     App.findByKey(key) map { app =>
       app.delete match {
         case true => Redirect(routes.Apps.index).flashing("success" -> "Application successfully deleted")
