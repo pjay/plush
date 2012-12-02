@@ -8,8 +8,7 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-      "net.debasishg" %% "redisclient" % "2.8",
-      "com.notnoop.apns" % "apns" % "0.1.6"
+      "net.debasishg" %% "redisclient" % "2.8"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
