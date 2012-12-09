@@ -7,9 +7,7 @@ import Parse.Implicits.parseLong
 
 case class Registration(appKey: String, value: String, lastRegistrationDate: Date)
 
-object Registration {
-
-  val redis = new RedisClient("localhost", 6379)
+object Registration extends RedisConnection {
 
   def findAllByAppKey(appKey: String) = {
     def iterate(result: Iterable[Option[String]], acc: List[Registration]): List[Registration] = result match {
