@@ -1,0 +1,25 @@
+@(app: App, eventsList: List[Event], offset: Int, count: Int)(implicit flash: Flash)
+
+@main("Events for " + app.name) {
+
+  <h2>Events for @app.name</h2>
+  @if(eventsList.nonEmpty) {
+    @events._list(eventsList)
+
+    <p id="pagination">
+      @if(offset > 0) {
+        <a href="@routes.Events.index(app.key, List(offset - count, 0).max, count)" class="previous-page">&lt; Previous page</a>
+      }
+      @if(eventsList.length > count) {
+        <a href="@routes.Events.index(app.key, offset + count, count)">Next page &gt;</a>
+      }
+    </p>
+  } else {
+    <p>No events recorded yet.</p>
+  }
+
+  <p>
+    <a href="@routes.Apps.show(app.key)">Back to @app.name</a>
+  </p>
+
+}

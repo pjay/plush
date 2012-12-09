@@ -34,6 +34,9 @@ GET     /apps/:key/device_tokens    controllers.DeviceTokens.index(key: String, 
 # Registrations
 GET     /apps/:key/registrations    controllers.Registrations.index(key: String, offset: Int ?= 0, count: Int ?= 50)
 
+# Events
+GET     /apps/:key/events           controllers.Events.index(key: String, offset: Int ?= 0, count: Int ?= 25)
+
 # Push
 GET     /push/broadcast/:key        controllers.Push.broadcast(key: String)
 POST    /push/broadcast/:key        controllers.Push.sendBroadcast(key: String)

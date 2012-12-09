@@ -44,27 +44,10 @@
 
   <h3>Latest events</h3>
   @if(Event.countAllByAppKey(app.key) > 0) {
-    <table id="events" cellspacing="0" cellpadding="0">
-      <thead>
-        <tr>
-          <td class="col1">Date</td>
-          <td class="col2">Severity</td>
-          <td>Message</td>
-        </tr>
-      </thead>
-      <tbody>
-        @for(event <- Event.findAllByAppKey(app.key, 0, 10)) {
-          <tr class="@event.severityString">
-            <td class="col1">@event.date</td>
-            <td class="col2">@event.severityString.toUpperCase</td>
-            <td>@event.message</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    @events._list(Event.findAllByAppKey(app.key, 0, 10))
 
     <p>
-      <a href="#">Display all events</a>
+      <a href="@routes.Events.index(app.key)">Display all events</a>
     </p>
   } else {
     <p>No events recorded yet.</p>

@@ -1,0 +1,20 @@
+@(events: List[Event])
+
+<table id="events" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <td class="col1">Date</td>
+      <td class="col2">Severity</td>
+      <td>Message</td>
+    </tr>
+  </thead>
+  <tbody>
+    @for(event <- events) {
+      <tr class="@event.severityString">
+        <td class="col1">@event.date</td>
+        <td class="col2">@event.severityString.toUpperCase</td>
+        <td>@event.message</td>
+      </tr>
+    }
+  </tbody>
+</table>
