@@ -108,7 +108,6 @@ Lots:
 * Use Akka IO (or another non-blocking library) for sending iOS notifications, in order to drop the java-apns dependency.
 * Factor out and clean up the Redis related code.
 * Layout improvements in the Web admin interface.
-* Pagination for device tokens & registrations lists.
 * Device alias and tags to ease building a recipients list. Send notifications by device(e) and/or alias(es) and/or tag(s).
 * Payload size validation.
 * Better documentation.

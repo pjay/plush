@@ -9,7 +9,7 @@ case class Registration(appKey: String, value: String, lastRegistrationDate: Dat
 
 object Registration extends RedisConnection {
 
-  def findAllByAppKey(appKey: String) = {
+  def findAllByAppKey(appKey: String, limit: Option[(Int, Int)] = None) = {
     def iterate(result: Iterable[Option[String]], acc: List[Registration]): List[Registration] = result match {
       case Some(value) :: Some(time) :: rest => {
         iterate(rest, Registration(appKey, value, new Date(time.toLong)) :: acc)
@@ -17,7 +17,9 @@ object Registration extends RedisConnection {
       case _ => acc.reverse
     }
 
-    val result = redis.sort[String]("app:" + appKey + ":registrations", None, true, false, Some("registration:" + appKey + ":*"), List("#", "registration:" + appKey + ":*"))
+    val by = Some("registration:" + appKey + ":*")
+    val get = List("#", "registration:" + appKey + ":*")
+    val result = redis.sort[String]("app:" + appKey + ":registrations", limit, true, false, by, get)
     iterate(result.flatten, List())
   }
 

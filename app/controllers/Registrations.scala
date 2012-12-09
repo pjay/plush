@@ -8,10 +8,10 @@ import views._
 
 object Registrations extends Controller with Secured {
 
-  def index(appKey: String) = withAuth { username => implicit request =>
+  def index(appKey: String, offset: Int, count: Int) = withAuth { username => implicit request =>
     App.findByKey(appKey).map { app =>
-      val registrations = Registration.findAllByAppKey(appKey)
-      Ok(html.registrations.index(app, registrations))
+      val registrations = Registration.findAllByAppKey(appKey, Some(offset, count + 1))
+      Ok(html.registrations.index(app, registrations, offset, count))
     } getOrElse NotFound
   }
 

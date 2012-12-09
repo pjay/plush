@@ -9,7 +9,7 @@ case class DeviceToken(appKey: String, value: String, lastRegistrationDate: Date
 
 object DeviceToken extends RedisConnection {
 
-  def findAllByAppKey(appKey: String) = {
+  def findAllByAppKey(appKey: String, limit: Option[(Int, Int)] = None) = {
     def iterate(result: Iterable[Option[String]], acc: List[DeviceToken]): List[DeviceToken] = result match {
       case Some(value) :: Some(time) :: rest => {
         iterate(rest, DeviceToken(appKey, value, new Date(time.toLong)) :: acc)
@@ -17,7 +17,9 @@ object DeviceToken extends RedisConnection {
       case _ => acc.reverse
     }
 
-    val result = redis.sort[String]("app:" + appKey + ":device_tokens", None, true, false, Some("device_token:" + appKey + ":*"), List("#", "device_token:" + appKey + ":*"))
+    val by = Some("device_token:" + appKey + ":*")
+    val get = List("#", "device_token:" + appKey + ":*")
+    val result = redis.sort[String]("app:" + appKey + ":device_tokens", limit, true, false, by, get)
     iterate(result.flatten, List())
   }
 

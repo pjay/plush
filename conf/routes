@@ -29,10 +29,10 @@ POST    /apps/:key/update           controllers.Apps.update(key: String)
 POST    /apps/:key/delete           controllers.Apps.delete(key: String)
 
 # Device tokens
-GET     /apps/:key/device_tokens    controllers.DeviceTokens.index(key: String)
+GET     /apps/:key/device_tokens    controllers.DeviceTokens.index(key: String, offset: Int ?= 0, count: Int ?= 50)
 
 # Registrations
-GET     /apps/:key/registrations    controllers.Registrations.index(key: String)
+GET     /apps/:key/registrations    controllers.Registrations.index(key: String, offset: Int ?= 0, count: Int ?= 50)
 
 # Push
 GET     /push/broadcast/:key        controllers.Push.broadcast(key: String)

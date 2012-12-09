@@ -1,4 +1,4 @@
-@(app: App, registrations: List[Registration])(implicit flash: Flash)
+@(app: App, registrations: List[Registration], offset: Int, count: Int)(implicit flash: Flash)
 
 @main("Android registrations for " + app.name) {
 
@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        @for(t <- registrations) {
+        @for(t <- registrations.take(count)) {
           <tr>
             <td>@t.value.toUpperCase</td>
             <td>@t.lastRegistrationDate</td>
@@ -20,6 +20,14 @@
         }
       </tbody>
     </table>
+    <p id="pagination">
+      @if(offset > 0) {
+        <a href="@routes.Registrations.index(app.key, List(offset - count, 0).max, count)" class="previous-page">&lt; Previous page</a>
+      }
+      @if(registrations.length > count) {
+        <a href="@routes.Registrations.index(app.key, offset + count, count)">Next page &gt;</a>
+      }
+    </p>
   } else {
     <p>No registrations yet.</p>
   }
@@ -29,4 +37,3 @@
   </p>
 
 }
-
