@@ -99,7 +99,6 @@ This project is still under active development. Basic features are already worki
 
 Lots:
 * APIs for sending notifications.
-* Error handling when receiving a response from the GCM servers.
 * Analytics.
 * Connecting to the APNS feedback service.
 * Pool of GCM workers.

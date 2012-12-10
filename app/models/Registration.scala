@@ -5,7 +5,11 @@ import com.redis._
 import com.redis.serialization._
 import Parse.Implicits.parseLong
 
-case class Registration(appKey: String, value: String, lastRegistrationDate: Date)
+case class Registration(appKey: String, value: String, lastRegistrationDate: Date) {
+
+  def delete = Registration.delete(appKey, value)
+
+}
 
 object Registration extends RedisConnection {
 

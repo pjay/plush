@@ -5,7 +5,11 @@ import com.redis._
 import com.redis.serialization._
 import Parse.Implicits.parseLong
 
-case class DeviceToken(appKey: String, value: String, lastRegistrationDate: Date)
+case class DeviceToken(appKey: String, value: String, lastRegistrationDate: Date) {
+
+  def delete = DeviceToken.delete(appKey, value)
+
+}
 
 object DeviceToken extends RedisConnection {
 
