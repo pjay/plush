@@ -20,7 +20,7 @@ case class Event(date: Date, severity: Short, message: String) {
 object Event {
 
   val redis = new RedisClient("localhost", 6379)
-  val maxEventsCount = 100
+  val maxEventsCount = 1000
 
   object Severity {
     val UNKNOWN: Short = 0
