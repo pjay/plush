@@ -90,7 +90,8 @@ class IosDispatchWorker(app: App) extends Actor {
   def receive = {
     case SendIosNotifications(deviceTokens, payload) => {
       val startTime = System.currentTimeMillis
-      deviceTokens foreach { token => service.push(token.value, Json.stringify(JsonUtil.toJson(payload))) }
+      val stringPayload = Json.stringify(JsonUtil.toJson(payload))
+      deviceTokens foreach { token => service.push(token.value, stringPayload) }
       val elapsed = (System.currentTimeMillis - startTime).toFloat / 1000
       val log = "Successfully delivered %d iOS notifications in %.3f seconds".format(deviceTokens.length, elapsed)
       Event.create(app.key, Event.Severity.INFO, log)
@@ -241,6 +242,7 @@ class GcmDispatchWorker extends Actor {
           case Some("MessageTooBig")       => Logger.warn("Received error from GCM (" + app.key + "): Payload is too big"); acc
           case Some("InvalidTtl")          => Logger.warn("Received error from GCM (" + app.key + "): invalid TTL"); acc
           case Some(error)                 => Logger.warn("Received unknown error from GCM (" + app.key + "): " + error); acc
+          case None                        => acc
         }
       }
     }
