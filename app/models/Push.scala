@@ -47,7 +47,7 @@ class IosDispatcher extends Actor {
         case Some(worker) => worker
         case None => {
           val worker = context.actorOf(Props(new IosDispatchWorker(app)))
-          workers = workers + (app.key -> worker)
+          workers += app.key -> worker
           worker
         }
       }
@@ -56,7 +56,7 @@ class IosDispatcher extends Actor {
     }
     case StopIosWorkers(app) => {
       workers.get(app.key) foreach { w => context.stop(w) }
-      workers = workers - app.key
+      workers -= app.key
     }
   }
 

@@ -20,7 +20,7 @@ object Api extends Controller {
                 case key :: secret :: Nil => {
                   App.findByKey(key) map { app =>
                     if (app.secret == secret) f(request, app) else Unauthorized
-                  } getOrElse(Unauthorized)
+                  } getOrElse Unauthorized
                 }
                 case _ => Unauthorized
               }
