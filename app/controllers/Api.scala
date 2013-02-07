@@ -8,8 +8,7 @@ import models._
 
 object Api extends Controller {
 
-  def ApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => Result): Action[A] = {
-    // TODO: flatten
+  def BaseApiAction[A](bp: BodyParser[A], securityCheck: (App, String) => Boolean)(f: (Request[A], App) => Result): Action[A] = {
     Action(bp) { request =>
       request.headers.get(AUTHORIZATION) match {
         case Some(header) => {
@@ -19,7 +18,7 @@ object Api extends Controller {
               decodedAuth.split(":").toList match {
                 case key :: secret :: Nil => {
                   App.findByKey(key) map { app =>
-                    if (app.secret == secret) f(request, app) else Unauthorized
+                    if (securityCheck(app, secret)) f(request, app) else Unauthorized
                   } getOrElse Unauthorized
                 }
                 case _ => Unauthorized
@@ -33,7 +32,13 @@ object Api extends Controller {
     }
   }
 
-  def createDeviceToken(value: String) = ApiAction(parse.anyContent) { (request, app) =>
+  def SecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => Result): Action[A] =
+    BaseApiAction(bp, (app, secret) => app.masterSecret == secret)(f)
+
+  def UnsecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => Result): Action[A] =
+    BaseApiAction(bp, (app, secret) => app.secret == secret)(f)
+
+  def createDeviceToken(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
     // TODO: 201 Created for first registrations, 200 OK otherwise
     value.length match {
       case 64 => DeviceToken.create(app.key, value).map(dt => Created).getOrElse(InternalServerError)
@@ -41,16 +46,16 @@ object Api extends Controller {
     }
   }
 
-  def deleteDeviceToken(value: String) = ApiAction(parse.anyContent) { (request, app) =>
+  def deleteDeviceToken(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
     if (DeviceToken.delete(app.key, value)) NoContent else NotFound
   }
 
-  def createRegistration(value: String) = ApiAction(parse.anyContent) { (request, app) =>
+  def createRegistration(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
     // TODO: 201 Created for first registrations, 200 OK otherwise
     Registration.create(app.key, value).map(dt => Created).getOrElse(InternalServerError)
   }
 
-  def deleteRegistration(value: String) = ApiAction(parse.anyContent) { (request, app) =>
+  def deleteRegistration(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
     if (Registration.delete(app.key, value)) NoContent else NotFound
   }
 
