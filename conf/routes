@@ -20,7 +20,6 @@ GET     /users/add                  controllers.Users.add
 POST    /users/create               controllers.Users.create
 
 # Applications
-GET     /apps                       controllers.Apps.index
 GET     /apps/add                   controllers.Apps.add
 POST    /apps/create                controllers.Apps.create
 GET     /apps/:key                  controllers.Apps.show(key: String)
