@@ -24,7 +24,7 @@ object Registration extends RedisConnection {
     val by = Some("registration:" + appKey + ":*")
     val get = List("#", "registration:" + appKey + ":*")
     val result = redis.sort[String]("app:" + appKey + ":registrations", limit, true, false, by, get)
-    iterate(result.flatten, List())
+    result map (iterate(_, List())) getOrElse List()
   }
 
   def countAllByAppKey(appKey: String): Long =

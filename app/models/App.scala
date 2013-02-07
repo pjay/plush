@@ -9,8 +9,8 @@ case class App(userId: Long, name: String, key: String, secret: String, masterSe
     createOrUpdateHash("app:" + key, attrs)
 
   def delete = {
-    val deviceTokens = redis.smembers("app:" + key + ":device_tokens").flatten.flatten.map("device_token:" + key + ":" + _)
-    val registrations = redis.smembers("app:" + key + ":registrations").flatten.flatten.map("registration:" + key + ":" + _)
+    val deviceTokens = redis.smembers("app:" + key + ":device_tokens") map (_ flatMap (_ map ("device_token:" + key + ":" + _))) getOrElse Set()
+    val registrations = redis.smembers("app:" + key + ":registrations") map (_ flatMap (_ map ("registration:" + key + ":" + _))) getOrElse Set()
 
     redis.pipeline { p =>
       p.del("app:" + key)
@@ -65,7 +65,7 @@ object App extends RedisModel {
     }
 
   def all: List[App] =
-    redis.sort("apps", None, false, true, Some("app:*->name"), Nil).flatten.flatten.map(key => redis.hgetall("app:" + key)).flatten.map(fromMap(_)).toList
+    redis.sort("apps", None, false, true, Some("app:*->name"), Nil) map (_ flatMap (_ flatMap (key => redis.hgetall("app:" + key)) map (fromMap _))) getOrElse List()
 
   def findByKey(key: String): Option[App] = redis.hgetall("app:" + key) match {
     case Some(map: Map[_, _]) if map.nonEmpty => Some(fromMap(map))

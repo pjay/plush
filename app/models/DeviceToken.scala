@@ -24,7 +24,7 @@ object DeviceToken extends RedisConnection {
     val by = Some("device_token:" + appKey + ":*")
     val get = List("#", "device_token:" + appKey + ":*")
     val result = redis.sort[String]("app:" + appKey + ":device_tokens", limit, true, false, by, get)
-    iterate(result.flatten, List())
+    result map (iterate(_, List())) getOrElse List()
   }
 
   def findByAppKeyAndValue(appKey: String, value: String) =

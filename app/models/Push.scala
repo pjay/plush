@@ -6,8 +6,9 @@ import play.api.libs.ws._
 import play.Logger
 import akka.actor._
 import akka.routing.RoundRobinRouter
-import akka.util.Duration
-import akka.util.duration._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps // for durations
 import com.notnoop.apns._
 
 sealed trait PushMessage
@@ -248,7 +249,7 @@ class GcmDispatchWorker extends Actor {
     }
   }
 
-  def retryAfter(delay: Duration, app: App, registrations: List[Registration], payload: Map[String, Any]) =
+  def retryAfter(delay: FiniteDuration, app: App, registrations: List[Registration], payload: Map[String, Any]) =
     Push.system.scheduler.scheduleOnce(delay, self, SendGcmMessage(app, registrations, payload))
 
   def retryWithExponentialBackoff(app: App, registrations: List[Registration], payload: Map[String, Any]) = {
@@ -283,7 +284,7 @@ object DateParser {
 
   def parseAs(fmt: String)(value: String): Option[Date] =
     try { Some(new SimpleDateFormat(fmt, Locale.US).parse(value)) }
-    catch { case _ => None }
+    catch { case _: Throwable => None }
 
   def RFC1123 = parseAs("EEE, dd MMM yyyy HH:mm:ss z")_
 
