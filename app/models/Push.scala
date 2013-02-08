@@ -12,11 +12,11 @@ import scala.language.postfixOps // for durations
 import com.notnoop.apns._
 
 sealed trait PushMessage
-case class SendIosBroadcast(app: App, payload: Map[String, Any]) extends PushMessage
-case class SendIosNotifications(deviceTokens: List[DeviceToken], payload: Map[String, Any]) extends PushMessage
+case class SendIosBroadcast(app: App, payload: JsObject) extends PushMessage
+case class SendIosNotifications(deviceTokens: List[DeviceToken], payload: JsObject) extends PushMessage
 case class StopIosWorkers(app: App) extends PushMessage
-case class SendGcmBroadcast(app: App, payload: Map[String, Any]) extends PushMessage
-case class SendGcmMessage(app: App, registrations: List[Registration], payload: Map[String, Any]) extends PushMessage
+case class SendGcmBroadcast(app: App, payload: JsObject) extends PushMessage
+case class SendGcmMessage(app: App, registrations: List[Registration], payload: JsObject) extends PushMessage
 
 object Push {
 
@@ -24,16 +24,16 @@ object Push {
   private val iosDispatcher = system.actorOf(Props(new IosDispatcher()))
   private val gcmDispatcher = system.actorOf(Props(new GcmDispatcher()))
 
-  def sendIosBroadcast(app: App, payload: Map[String, Any]) =
+  def sendIosBroadcast(app: App, payload: JsObject) =
     iosDispatcher ! SendIosBroadcast(app, payload)
 
   def stopIosWorkers(app: App) =
     iosDispatcher ! StopIosWorkers(app)
 
-  def sendGcmBroadcast(app: App, payload: Map[String, Any]) =
+  def sendGcmBroadcast(app: App, payload: JsObject) =
     gcmDispatcher ! SendGcmBroadcast(app, payload)
 
-  def sendGcmMessage(app: App, registrations: List[Registration], payload: Map[String, Any]) =
+  def sendGcmMessage(app: App, registrations: List[Registration], payload: JsObject) =
     gcmDispatcher ! SendGcmMessage(app, registrations, payload)
 
 }
@@ -91,7 +91,7 @@ class IosDispatchWorker(app: App) extends Actor {
   def receive = {
     case SendIosNotifications(deviceTokens, payload) => {
       val startTime = System.currentTimeMillis
-      val stringPayload = Json.stringify(JsonUtil.toJson(payload))
+      val stringPayload = Json.stringify(payload)
       deviceTokens foreach { token => service.push(token.value, stringPayload) }
       val elapsed = (System.currentTimeMillis - startTime).toFloat / 1000
       val log = "Successfully delivered %d iOS notifications in %.3f seconds".format(deviceTokens.length, elapsed)
@@ -114,12 +114,12 @@ class GcmDispatchWorker extends Actor {
 
   def receive = {
     case SendGcmMessage(app, registrations, payload) => {
-      val payloadWithRegistrations = payload.updated("registration_ids", registrations map (_.value))
+      val payloadWithRegistrations = payload + ("registration_ids", Json.arr(registrations map (_.value)))
       // TODO: set a timeout
       WS.url(apiEndpoint).withHeaders(
         "Authorization" -> ("key=" + app.gcmApiKey.getOrElse("")),
         "Content-Type" -> "application/json"
-      ) post JsonUtil.toJson(payloadWithRegistrations) map { response =>
+      ) post payloadWithRegistrations map { response =>
         handleResponse(app, registrations, payload, response)
       } extend1 {
         // TODO: retry mechanism based on the exception type (e.g. ConnectException)
@@ -137,7 +137,7 @@ class GcmDispatchWorker extends Actor {
     }
   }
 
-  def handleResponse(app: App, registrations: List[Registration], payload: Map[String, Any], response: Response) = response.status match {
+  def handleResponse(app: App, registrations: List[Registration], payload: JsObject, response: Response) = response.status match {
     case 200 => {
       // Success
       val elapsed = (System.currentTimeMillis - startTime).toFloat / 1000
@@ -249,29 +249,12 @@ class GcmDispatchWorker extends Actor {
     }
   }
 
-  def retryAfter(delay: FiniteDuration, app: App, registrations: List[Registration], payload: Map[String, Any]) =
+  def retryAfter(delay: FiniteDuration, app: App, registrations: List[Registration], payload: JsObject) =
     Push.system.scheduler.scheduleOnce(delay, self, SendGcmMessage(app, registrations, payload))
 
-  def retryWithExponentialBackoff(app: App, registrations: List[Registration], payload: Map[String, Any]) = {
+  def retryWithExponentialBackoff(app: App, registrations: List[Registration], payload: JsObject) = {
     retryAfter(backoffDelay milliseconds, app, registrations, payload)
     backoffDelay = List(backoffDelay * 2, maxBackoffDelay).min
-  }
-
-}
-
-object JsonUtil {
-
-  def toJson(value: Any): JsValue = value match {
-    case v: Boolean => Json.toJson(v)
-    case v: Double => Json.toJson(v)
-    case v: Float => Json.toJson(v)
-    case v: Int => Json.toJson(v)
-    case v: Long => Json.toJson(v)
-    case v: Short => Json.toJson(v)
-    case v: String => Json.toJson(v)
-    case v: Seq[_] => Json.toJson(v map toJson)
-    case v: Map[_, _] => Json.toJson(v map { case (k: String, v) => (k, toJson(v)) })
-    case _ => JsNull
   }
 
 }

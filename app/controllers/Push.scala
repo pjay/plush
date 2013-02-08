@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.json._
 
 import models._
 import views._
@@ -42,8 +43,8 @@ object Push extends Controller with Secured {
             formWithErrors => BadRequest(html.push.broadcast(app, formWithErrors, gcmBroadcastForm)),
             values => {
               val (badge, alert, sound) = values
-              val aps = Map("badge" -> badge, "alert" -> alert, "sound" -> sound) filter { case (k, v) => v.isDefined }
-              val payload = Map("aps" -> (aps map { case (k, Some(v)) => k -> v; case (k, v) => k -> v }))
+              val payloadMap = Json.obj("badge" -> badge, "alert" -> alert, "sound" -> sound).value filter { pair => pair._2 != JsNull }
+              val payload = JsObject(payloadMap.toSeq)
               models.Push.sendIosBroadcast(app, payload)
               Redirect(routes.Apps.show(appKey)).flashing("success" -> "The broadcast notification is being sent")
             }
@@ -54,7 +55,7 @@ object Push extends Controller with Secured {
             formWithErrors => BadRequest(html.push.broadcast(app, iosBroadcastForm, formWithErrors)),
             values => {
               val (extraKey, extraValue) = values
-              models.Push.sendGcmBroadcast(app, Map("data" -> Map(extraKey -> extraValue)))
+              models.Push.sendGcmBroadcast(app, Json.obj("data" -> Json.obj(extraKey -> extraValue)))
               Redirect(routes.Apps.show(appKey)).flashing("success" -> "The broadcast notification is being sent")
             }
           )
