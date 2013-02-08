@@ -107,6 +107,7 @@ class IosDispatchWorker(app: App) extends Actor {
 class GcmDispatchWorker extends Actor {
 
   val apiEndpoint = "https://android.googleapis.com/gcm/send"
+  val timeout = 30000
   var backoffDelay = 500
   val maxBackoffDelay = 60000
   val startTime = System.currentTimeMillis
@@ -115,8 +116,7 @@ class GcmDispatchWorker extends Actor {
   def receive = {
     case SendGcmMessage(app, registrations, payload) => {
       val payloadWithRegistrations = payload + ("registration_ids", Json.arr(registrations map (_.value)))
-      // TODO: set a timeout
-      WS.url(apiEndpoint).withHeaders(
+      WS.url(apiEndpoint).withTimeout(timeout).withHeaders(
         "Authorization" -> ("key=" + app.gcmApiKey.getOrElse("")),
         "Content-Type" -> "application/json"
       ) post payloadWithRegistrations map { response =>
