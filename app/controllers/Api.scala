@@ -2,7 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import play.api.libs.json.JsValue
+import play.api.libs.json._
 
 import models._
 
@@ -57,6 +57,38 @@ object Api extends Controller {
 
   def deleteRegistration(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
     if (Registration.delete(app.key, value)) NoContent else NotFound
+  }
+
+  def push = SecuredApiAction(parse.json) { (request, app) =>
+    // TODO: validate presence of 'aps' key
+    request.body.validate((__ \ 'device_tokens).read[List[String]]).fold(
+      e => BadRequest("JSON object doesn't contain a 'device_tokens' array"),
+      res => {
+        res flatMap { tokenValue => DeviceToken.findByAppKeyAndValue(app.key, tokenValue) } match {
+          case Nil => BadRequest("No valid and registered device tokens found in 'device_tokens' array")
+          case deviceTokens => {
+            request.body.transform((__ \ 'device_tokens).json.prune).fold(
+              e => BadRequest(e.toString),
+              res => {
+                models.Push.sendIosNotifications(app, deviceTokens, res)
+                Ok
+              }
+            )
+          }
+        }
+      }
+    )
+  }
+
+  def pushBroadcast = SecuredApiAction(parse.json) { (request, app) =>
+    // TODO: validate presence of 'aps' key
+    request.body.transform((__).json.pick[JsObject]).fold(
+      e => BadRequest("JSON is not an object"),
+      res => {
+        models.Push.sendIosBroadcast(app, res)
+        Ok
+      }
+    )
   }
 
 }

@@ -13,7 +13,7 @@ import com.notnoop.apns._
 
 sealed trait PushMessage
 case class SendIosBroadcast(app: App, payload: JsObject) extends PushMessage
-case class SendIosNotifications(deviceTokens: List[DeviceToken], payload: JsObject) extends PushMessage
+case class SendIosNotifications(app: App, deviceTokens: List[DeviceToken], payload: JsObject) extends PushMessage
 case class StopIosWorkers(app: App) extends PushMessage
 case class SendGcmBroadcast(app: App, payload: JsObject) extends PushMessage
 case class SendGcmMessage(app: App, registrations: List[Registration], payload: JsObject) extends PushMessage
@@ -26,6 +26,9 @@ object Push {
 
   def sendIosBroadcast(app: App, payload: JsObject) =
     iosDispatcher ! SendIosBroadcast(app, payload)
+
+  def sendIosNotifications(app: App, deviceTokens: List[DeviceToken], payload: JsObject) =
+    iosDispatcher ! SendIosNotifications(app, deviceTokens, payload)
 
   def stopIosWorkers(app: App) =
     iosDispatcher ! StopIosWorkers(app)
@@ -44,20 +47,26 @@ class IosDispatcher extends Actor {
 
   def receive = {
     case SendIosBroadcast(app, payload) => {
-      val worker = workers.get(app.key) match {
-        case Some(worker) => worker
-        case None => {
-          val worker = context.actorOf(Props(new IosDispatchWorker(app)))
-          workers += app.key -> worker
-          worker
-        }
-      }
       val deviceTokens = DeviceToken.findAllByAppKey(app.key)
-      worker ! SendIosNotifications(deviceTokens, payload)
+      workerForApp(app) ! SendIosNotifications(app, deviceTokens, payload)
+    }
+    case SendIosNotifications(app, deviceTokens, payload) => {
+      workerForApp(app) ! SendIosNotifications(app, deviceTokens, payload)
     }
     case StopIosWorkers(app) => {
       workers.get(app.key) foreach { w => context.stop(w) }
       workers -= app.key
+    }
+  }
+
+  def workerForApp(app: App) = {
+    workers.get(app.key) match {
+      case Some(worker) => worker
+      case None => {
+        val worker = context.actorOf(Props(new IosDispatchWorker(app)))
+        workers += app.key -> worker
+        worker
+      }
     }
   }
 
@@ -89,7 +98,7 @@ class IosDispatchWorker(app: App) extends Actor {
   // TODO: test connection
 
   def receive = {
-    case SendIosNotifications(deviceTokens, payload) => {
+    case SendIosNotifications(app, deviceTokens, payload) => {
       val startTime = System.currentTimeMillis
       val stringPayload = Json.stringify(payload)
       deviceTokens foreach { token => service.push(token.value, stringPayload) }

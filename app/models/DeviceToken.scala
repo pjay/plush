@@ -29,7 +29,7 @@ object DeviceToken extends RedisConnection {
 
   def findByAppKeyAndValue(appKey: String, value: String) =
     redis.get("device_token:" + appKey + ":" + value) map { time =>
-      DeviceToken(appKey, value, new Date(time.toLong))
+      Some(DeviceToken(appKey, value, new Date(time.toLong)))
     } getOrElse None
 
   def countAllByAppKey(appKey: String): Long =

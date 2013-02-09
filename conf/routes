@@ -10,6 +10,8 @@ PUT     /api/device_tokens/:value   controllers.Api.createDeviceToken(value: Str
 DELETE  /api/device_tokens/:value   controllers.Api.deleteDeviceToken(value: String)
 PUT     /api/registrations/:value   controllers.Api.createRegistration(value: String)
 DELETE  /api/registrations/:value   controllers.Api.deleteRegistration(value: String)
+POST    /api/push                   controllers.Api.push
+POST    /api/push/broadcast         controllers.Api.pushBroadcast
 
 # Users
 GET     /users                      controllers.Users.index
