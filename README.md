@@ -71,19 +71,19 @@ Example uses of API calls using `curl` follow:
 
 #### Sending a notification to iOS devices
 
-TODO
+	$ curl -X POST -u "<app_key>:<app_master_secret>" -H "Content-Type: application/json" --data '{"device_tokens": ["<device_token>", …], "aps": {"alert": "hello world!"}}' http://<server_ip>:9000/api/push
 
 #### Sending a notification to Android devices
 
-TODO
+	$ curl -X POST -u "<app_key>:<app_master_secret>" -H "Content-Type: application/json" --data '{"registration_ids": ["<registration_id>", …], "data": {"a_key": "hello world!"}}' http://<server_ip>:9000/api/push
 
 #### Sending a broadcast notification to iOS devices
 
-TODO
+	$ curl -X POST -u "<app_key>:<app_master_secret>" -H "Content-Type: application/json" --data '{"aps": {"alert": "hello world!"}}' http://<server_ip>:9000/api/push/broadcast
 
 #### Sending a broadcast notification to Android devices
 
-TODO
+	$ curl -X POST -u "<app_key>:<app_master_secret>" -H "Content-Type: application/json" --data '{"data": {"a_key": "hello world!"}}' http://<server_ip>:9000/api/push/broadcast
 
 ## Dependencies
 
@@ -98,13 +98,12 @@ This project is still under active development. Basic features are already worki
 ## TODO
 
 Lots:
-* APIs for sending notifications.
 * Analytics.
 * Connecting to the APNS feedback service.
 * Pool of GCM workers.
 * Better home page with a quick overview of all apps.
 * Implement the Akka supervision strategies.
-* Use Akka IO (or another non-blocking library) for sending iOS notifications, in order to drop the java-apns dependency.
+* Use Akka IO (or another non-blocking library like spray-io) for sending iOS notifications, in order to drop the java-apns dependency.
 * Factor out and clean up the Redis related code.
 * Layout improvements in the Web admin interface.
 * Device alias and tags to ease building a recipients list. Send notifications by device(e) and/or alias(es) and/or tag(s).
