@@ -2,6 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import models._
@@ -60,33 +61,59 @@ object Api extends Controller {
   }
 
   def push = SecuredApiAction(parse.json) { (request, app) =>
-    // TODO: validate presence of 'aps' key
-    request.body.validate((__ \ 'device_tokens).read[List[String]]).fold(
-      e => BadRequest("JSON object doesn't contain a 'device_tokens' array"),
+    val reads = (
+      (__).read[JsObject] and
+      (__ \ 'device_tokens).readNullable[List[String]] and
+      (__ \ 'registration_ids).readNullable[List[String]] and
+      (__ \ 'aps).readNullable[JsObject]
+    ).tupled
+
+    request.body.validate(reads).fold(
+      e => BadRequest("Invalid JSON"),
       res => {
-        res flatMap { tokenValue => DeviceToken.findByAppKeyAndValue(app.key, tokenValue) } match {
-          case Nil => BadRequest("No valid and registered device tokens found in 'device_tokens' array")
-          case deviceTokens => {
-            request.body.transform((__ \ 'device_tokens).json.prune).fold(
-              e => BadRequest(e.toString),
-              res => {
-                models.Push.sendIosNotifications(app, deviceTokens, res)
-                Ok
-              }
-            )
+        val (obj, deviceTokensOpt, registrationsOpt, apsOpt) = res
+
+        if (deviceTokensOpt.isDefined && apsOpt.isDefined) {
+          val deviceTokens = deviceTokensOpt map (_ flatMap (DeviceToken.findByAppKeyAndValue(app.key, _))) getOrElse List()
+          if (deviceTokens.nonEmpty) {
+            models.Push.sendIosNotifications(app, deviceTokens, obj - "device_tokens")
+            Ok
+          } else {
+            BadRequest("List of device tokens is empty or contains only invalid values")
           }
+        } else if (registrationsOpt.isDefined) {
+          val registrations = registrationsOpt map (_ flatMap (Registration.findByAppKeyAndValue(app.key, _))) getOrElse List()
+          if (registrations.nonEmpty) {
+            models.Push.sendGcmMessage(app, registrations, obj - "registration_ids")
+            Ok
+          } else {
+            BadRequest("List of registration IDs is empty or contains only invalid values")
+          }
+        } else {
+          BadRequest("Invalid JSON key/value pairs")
         }
       }
     )
   }
 
   def pushBroadcast = SecuredApiAction(parse.json) { (request, app) =>
-    // TODO: validate presence of 'aps' key
-    request.body.transform((__).json.pick[JsObject]).fold(
+    val reads = (
+      (__).read[JsObject] and
+      (__ \ 'aps).readNullable[JsObject]
+    ).tupled
+
+    request.body.validate(reads).fold(
       e => BadRequest("JSON is not an object"),
       res => {
-        models.Push.sendIosBroadcast(app, res)
-        Ok
+        val (obj, aps) = res
+
+        if (aps.isDefined) {
+          models.Push.sendIosBroadcast(app, obj)
+          Ok
+        } else {
+          models.Push.sendGcmBroadcast(app, obj)
+          Ok
+        }
       }
     )
   }

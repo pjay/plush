@@ -27,6 +27,11 @@ object Registration extends RedisConnection {
     result map (iterate(_, List())) getOrElse List()
   }
 
+  def findByAppKeyAndValue(appKey: String, value: String) =
+    redis.get("registration:" + appKey + ":" + value) map { time =>
+      Some(Registration(appKey, value, new Date(time.toLong)))
+    } getOrElse None
+
   def countAllByAppKey(appKey: String): Long =
     redis.scard("app:" + appKey + ":registrations").getOrElse(0)
 
