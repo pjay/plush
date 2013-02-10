@@ -17,10 +17,8 @@ object Push extends Controller with Secured {
       "alert" -> optional(text),
       "sound" -> optional(text)
     ) verifying ("All notification fields are empty", fields => fields match {
-      case (Some(b), _, _) if b > 0 => true
-      case (_, Some(a), _) => true
-      case (_, _, Some(s)) => true
-      case _ => false
+      case (None, None, None) => false
+      case _ => true
     }))
 
   val gcmBroadcastForm = Form(
