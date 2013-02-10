@@ -11,6 +11,8 @@
 @form(action = action, 'enctype -> "multipart/form-data") {
   <dl id="new-app">
     @inputText(appForm("name"), '_label -> "Name")
+    <dt><label for="app_icon">Icon</label></dt>
+    <dd><input type="file" name="icon" id="app_icon"></dd>
     <dt><label for="app_certificate">iOS P12 certificate</label></dt>
     <dd><input type="file" name="certificate" id="app_certificate"></dd>
     @if(app.isDefined) {

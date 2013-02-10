@@ -2,7 +2,12 @@
 
 @main(app.name) {
 
-  <h2>@app.name</h2>
+  <h2 class="app-title">
+    @if(app.hasIcon) {
+      <div class="app-icon"><img src="@routes.Apps.icon(app.key)"></div>
+    }
+    <span>@app.name</span>
+  </h2>
   <dl id="app-details">
     <dt>Application key</dt>
     <dd>@app.key</dd>
@@ -52,4 +57,5 @@
   } else {
     <p>No events recorded yet.</p>
   }
+
 }

@@ -25,12 +25,9 @@ case class App(userId: Long, name: String, key: String, secret: String, masterSe
     }
   }
 
-  def certFile = {
-    import java.io.File
-    import play.api.Play
-    import play.api.Play.current
-    Play.application.getFile("certs/" + key + ".pem")
-  }
+  def iconFile = file("icons", "png")
+
+  def certFile = file("certs", "pem")
 
   def isIosEnabled = {
     import java.io.File
@@ -41,6 +38,17 @@ case class App(userId: Long, name: String, key: String, secret: String, masterSe
 
   def isGcmEnabled =
     !gcmApiKey.isEmpty
+
+  def hasIcon = iconFile.exists
+
+  def numberOfActiveUsers = DeviceToken.countAllByAppKey(key) + Registration.countAllByAppKey(key)
+
+  private def file(dir: String, ext: String) = {
+    import java.io.File
+    import play.api.Play
+    import play.api.Play.current
+    Play.application.getFile(dir + File.separator + key + "." + ext)
+  }
 
 }
 

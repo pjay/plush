@@ -44,6 +44,7 @@ object Apps extends Controller with Secured {
         // TODO: use real user ID once auth is done
         App.create(1, name, appMode, debugMode, iosCertPassword, gcmApiKey) match {
           case Some(key) => { App.findByKey(key) map { app =>
+              processIcon(app)
               moveCertificate(app)
               Redirect(routes.Apps.show(app.key)).flashing("success" -> "Application successfully created")
             }
@@ -70,6 +71,7 @@ object Apps extends Controller with Secured {
           val attrs = Map("name" -> name, "appMode" -> appMode, "debugMode" -> debugMode, "iosCertPassword" -> iosCertPassword, "gcmApiKey" -> gcmApiKey)
           app.update(attrs) match {
             case true => {
+              processIcon(app)
               moveCertificate(app)
               // Stop the iOS workers of the modified app if any of the following conditions occurs:
               // * A new certificate has been uploaded
@@ -100,9 +102,32 @@ object Apps extends Controller with Secured {
     } getOrElse NotFound
   }
 
+  def icon(key: String) = withAuth { username => implicit request =>
+    App.findByKey(key) map { app =>
+      import java.io.File
+      val iconFile = app.iconFile
+      if (iconFile.exists) Ok.sendFile(iconFile)
+      else NotFound
+    } getOrElse NotFound
+  }
+
   private def moveCertificate(app: App)(implicit request: Request[MultipartFormData[Files.TemporaryFile]]) =
     request.body.file("certificate").map { certificate =>
       certificate.ref.moveTo(app.certFile, true)
     }
 
+  private def processIcon(app: App)(implicit request: Request[MultipartFormData[Files.TemporaryFile]]) =
+    request.body.file("icon").map { icon =>
+      import java.awt.Image
+      import java.awt.image.BufferedImage
+      import javax.imageio.ImageIO
+
+      val source = ImageIO.read(icon.ref.file)
+      if (source != null) {
+        val resized = source.getScaledInstance(57, 57, Image.SCALE_SMOOTH)
+        val buffered = new BufferedImage(resized.getWidth(null), resized.getHeight(null), BufferedImage.TYPE_INT_RGB)
+        buffered.getGraphics().drawImage(resized, 0, 0, null)
+        ImageIO.write(buffered, "png", app.iconFile)
+      }
+    }
 }

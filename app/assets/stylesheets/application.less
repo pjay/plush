@@ -51,6 +51,21 @@ form dl#app-broadcast { .form-dl(100px); }
 
 /* Apps */
 
+@app-icon-size: 57px;
+@app-icon-margin-left: 70px;
+@app-icon-border-radius: 10px;
+
+.app-icon { width: @app-icon-size; height: @app-icon-size; }
+.app-icon img { border-radius: @app-icon-border-radius; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3); }
+
+ul#apps { margin-left: 0; list-style-type: none; }
+ul#apps li { clear: left; margin-bottom: 20px; padding-left: 0; }
+ul#apps li .app-icon { float: left; }
+ul#apps li h3 { margin: 0 0 0 @app-icon-margin-left; padding-top: 10px; border-bottom-width: 0; }
+ul#apps li p { margin: 0 0 0 @app-icon-margin-left; }
+
+h2.app-title .app-icon { display: inline; margin-right: 10px; }
+h2.app-title * { vertical-align: middle; }
 dl#app-details { .dl(200px); }
 dl#app-stats { .dl(255px); }
 

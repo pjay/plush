@@ -28,6 +28,7 @@ GET     /apps/:key                  controllers.Apps.show(key: String)
 GET     /apps/:key/edit             controllers.Apps.edit(key: String)
 POST    /apps/:key/update           controllers.Apps.update(key: String)
 POST    /apps/:key/delete           controllers.Apps.delete(key: String)
+GET     /apps/:key/icon.png         controllers.Apps.icon(key: String)
 
 # Device tokens
 GET     /apps/:key/device_tokens    controllers.DeviceTokens.index(key: String, offset: Int ?= 0, count: Int ?= 50)

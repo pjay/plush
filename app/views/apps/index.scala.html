@@ -4,9 +4,21 @@
 
   <h2>My applications</h2>
   @if(!apps.isEmpty) {
-    <ul>
+    <ul id="apps">
       @for(app <- apps) {
-        <li><a href="@routes.Apps.show(app.key)">@app.name</a></li>
+        <li>
+          <a href="@routes.Apps.show(app.key)">
+            <div class="app-icon">
+              @if(app.hasIcon) {
+                <img src="@routes.Apps.icon(app.key)">
+              } else {
+                <img src="@routes.Assets.at("images/app_icon.png")">
+              }
+            </div>
+            <h3>@app.name</h3>
+          </a>
+          <p>@app.numberOfActiveUsers active users</p>
+        </li>
       }
     </ul>
   } else {
@@ -14,7 +26,7 @@
   }
 
   <p>
-  <a href="@routes.Apps.add">Create an application</a>
+    <a href="@routes.Apps.add">Create an application</a>
   </p>
 
 }
