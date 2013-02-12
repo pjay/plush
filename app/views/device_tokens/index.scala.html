@@ -14,7 +14,7 @@
       <tbody>
         @for(t <- deviceTokens.take(count)) {
           <tr>
-            <td>@t.value.toUpperCase</td>
+            <td>@t.value</td>
             <td>@t.lastRegistrationDate</td>
           </tr>
         }

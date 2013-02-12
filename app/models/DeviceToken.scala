@@ -28,7 +28,7 @@ object DeviceToken extends RedisConnection {
   }
 
   def findByAppKeyAndValue(appKey: String, value: String) =
-    redis.get("device_token:" + appKey + ":" + value) map { time =>
+    redis.get("device_token:" + appKey + ":" + value.toUpperCase) map { time =>
       Some(DeviceToken(appKey, value, new Date(time.toLong)))
     } getOrElse None
 
@@ -37,18 +37,20 @@ object DeviceToken extends RedisConnection {
 
   def create(appKey: String, value: String): Option[DeviceToken] = {
     val time = new Date().getTime()
+    val uppercaseValue = value.toUpperCase
     redis.pipeline { p =>
-      p.set("device_token:" + appKey + ":" + value, time)
-      p.sadd("app:" + appKey + ":device_tokens", value)
+      p.set("device_token:" + appKey + ":" + uppercaseValue, time)
+      p.sadd("app:" + appKey + ":device_tokens", uppercaseValue)
     }
     // TODO: error handling
-    Some(DeviceToken(appKey, value, new Date(time)))
+    Some(DeviceToken(appKey, uppercaseValue, new Date(time)))
   }
 
   def delete(appKey: String, value: String): Boolean = {
+    val uppercaseValue = value.toUpperCase
     redis.pipeline { p =>
-      p.srem("app:" + appKey + ":device_tokens", value)
-      p.del("device_token:" + appKey + ":" + value)
+      p.srem("app:" + appKey + ":device_tokens", uppercaseValue)
+      p.del("device_token:" + appKey + ":" + uppercaseValue)
     }
     // TODO: error handling
     true
