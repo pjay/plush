@@ -13,15 +13,21 @@
     @inputText(appForm("name"), '_label -> "Name")
     <dt><label for="app_icon">Icon</label></dt>
     <dd><input type="file" name="icon" id="app_icon"></dd>
-    <dt><label for="app_certificate">iOS P12 certificate</label></dt>
-    <dd><input type="file" name="certificate" id="app_certificate"></dd>
-    @if(app.isDefined) {
-      <dd><i>Leave empty to keep the existing certificate</i></dd>
-    }
-    @inputPassword(appForm("iosCertPassword"), '_label -> "iOS certificate password")
-    @select(field = appForm("appMode"), options = options("0" -> "Development", "1" -> "Production"), '_label -> "iOS application mode")
-    @checkbox(appForm("debugMode"), '_label -> "iOS debug mode")
-    @inputText(appForm("gcmApiKey"), '_label -> "Android GCM API key")
+    <fieldset>
+      <legend>iOS</legend>
+      <dt><label for="app_certificate">PKCS#12 certificate</label></dt>
+      <dd><input type="file" name="certificate" id="app_certificate"></dd>
+      @if(app.isDefined) {
+        <dd><i>Leave empty to keep the existing certificate</i></dd>
+      }
+      @inputPassword(appForm("iosCertPassword"), '_label -> "Certificate password")
+      @select(field = appForm("appMode"), options = options("0" -> "Development", "1" -> "Production"), '_label -> "Application mode")
+      @checkbox(appForm("debugMode"), '_label -> "Debug mode")
+    </fieldset>
+    <fieldset>
+      <legend>Android</legend>
+      @inputText(appForm("gcmApiKey"), '_label -> "GCM API key")
+    </fieldset>
     <dd><input type="submit" value="@submitLabel"> or <a href="@cancelRoute">Cancel</a></dd>
   </dl>
 }
