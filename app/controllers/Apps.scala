@@ -113,7 +113,7 @@ object Apps extends Controller with Secured {
 
   private def moveCertificate(app: App)(implicit request: Request[MultipartFormData[Files.TemporaryFile]]) =
     request.body.file("certificate").map { certificate =>
-      certificate.ref.moveTo(app.certFile, true)
+      if (certificate.ref.file.length > 0) certificate.ref.moveTo(app.certFile, true)
     }
 
   private def processIcon(app: App)(implicit request: Request[MultipartFormData[Files.TemporaryFile]]) =
