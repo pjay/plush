@@ -9,7 +9,7 @@ import models._
 
 object Api extends Controller {
 
-  def BaseApiAction[A](bp: BodyParser[A], securityCheck: (App, String) => Boolean)(f: (Request[A], App) => Result): Action[A] = {
+  def BaseApiAction[A](bp: BodyParser[A], securityCheck: (App, String) => Boolean)(f: (Request[A], App) => SimpleResult): Action[A] = {
     Action(bp) { request =>
       request.headers.get(AUTHORIZATION) match {
         case Some(header) => {
@@ -33,10 +33,10 @@ object Api extends Controller {
     }
   }
 
-  def SecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => Result): Action[A] =
+  def SecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => SimpleResult): Action[A] =
     BaseApiAction(bp, (app, secret) => app.masterSecret == secret)(f)
 
-  def UnsecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => Result): Action[A] =
+  def UnsecuredApiAction[A](bp: BodyParser[A])(f: (Request[A], App) => SimpleResult): Action[A] =
     BaseApiAction(bp, (app, secret) => app.secret == secret)(f)
 
   def createDeviceToken(value: String) = UnsecuredApiAction(parse.anyContent) { (request, app) =>
