@@ -125,7 +125,7 @@ class GcmDispatchWorker extends Actor {
   def receive = {
     case SendGcmMessage(app, registrations, payload) => {
       val payloadWithRegistrations = payload - "registration_ids" + ("registration_ids", JsArray(registrations map (r => JsString(r.value))))
-      WS.url(apiEndpoint).withTimeout(timeout).withHeaders(
+      WS.url(apiEndpoint).withRequestTimeout(timeout).withHeaders(
         "Authorization" -> ("key=" + app.gcmApiKey.getOrElse("")),
         "Content-Type" -> "application/json"
       ) post payloadWithRegistrations map { response =>
