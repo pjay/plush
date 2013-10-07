@@ -130,18 +130,14 @@ class GcmDispatchWorker extends Actor {
         "Content-Type" -> "application/json"
       ) post payloadWithRegistrations map { response =>
         handleResponse(app, registrations, payload, response)
-      } extend1 {
+      } recover { case throwable: Throwable =>
         // TODO: retry mechanism based on the exception type (e.g. ConnectException)
-        case Thrown(throwable) => {
-          Logger.debug(throwable.getClass.getName)
-          throwable.printStackTrace
-          val log = "An error occured while sending the GCM notifications - please contact the developers (error: " + throwable.getMessage() + ")"
-          Event.create(app.key, Event.Severity.ERROR, log)
-          if (finished) context.stop(self)
-        }
-        case Redeemed(value) => {
-          if (finished) context.stop(self)
-        }
+        Logger.debug(throwable.getClass.getName)
+        throwable.printStackTrace
+        val log = "An error occured while sending the GCM notifications - please contact the developers (error: " + throwable.getMessage() + ")"
+        Event.create(app.key, Event.Severity.ERROR, log)
+      } onComplete { result =>
+        context.stop(self)
       }
     }
   }
