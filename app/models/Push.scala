@@ -125,23 +125,19 @@ class GcmDispatchWorker extends Actor {
   def receive = {
     case SendGcmMessage(app, registrations, payload) => {
       val payloadWithRegistrations = payload - "registration_ids" + ("registration_ids", JsArray(registrations map (r => JsString(r.value))))
-      WS.url(apiEndpoint).withTimeout(timeout).withHeaders(
+      WS.url(apiEndpoint).withRequestTimeout(timeout).withHeaders(
         "Authorization" -> ("key=" + app.gcmApiKey.getOrElse("")),
         "Content-Type" -> "application/json"
       ) post payloadWithRegistrations map { response =>
         handleResponse(app, registrations, payload, response)
-      } extend1 {
+      } recover { case throwable: Throwable =>
         // TODO: retry mechanism based on the exception type (e.g. ConnectException)
-        case Thrown(throwable) => {
-          Logger.debug(throwable.getClass.getName)
-          throwable.printStackTrace
-          val log = "An error occured while sending the GCM notifications - please contact the developers (error: " + throwable.getMessage() + ")"
-          Event.create(app.key, Event.Severity.ERROR, log)
-          if (finished) context.stop(self)
-        }
-        case Redeemed(value) => {
-          if (finished) context.stop(self)
-        }
+        Logger.debug(throwable.getClass.getName)
+        throwable.printStackTrace
+        val log = "An error occured while sending the GCM notifications - please contact the developers (error: " + throwable.getMessage() + ")"
+        Event.create(app.key, Event.Severity.ERROR, log)
+      } onComplete { result =>
+        context.stop(self)
       }
     }
   }

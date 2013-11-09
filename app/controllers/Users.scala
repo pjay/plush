@@ -82,10 +82,10 @@ trait Secured {
   def onUnauthorized(request: RequestHeader) =
     Results.Redirect(routes.Users.login).withSession("uriBeforeLogin" -> request.uri).flashing("error" -> "Login required")
 
-  def withAuth(f: => String => Request[AnyContent] => Result) =
+  def withAuth(f: => String => Request[AnyContent] => SimpleResult) =
     withAuth[AnyContent](BodyParsers.parse.anyContent)(f)
 
-  def withAuth[A](bp: BodyParser[A])(f: => String => Request[A] => Result) = {
+  def withAuth[A](bp: BodyParser[A])(f: => String => Request[A] => SimpleResult) = {
     Security.Authenticated(username, onUnauthorized) { user =>
       Action[A](bp)(request => f(user)(request))
     }
