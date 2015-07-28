@@ -1,7 +1,6 @@
 package models
 
 import java.util.Date
-import com.redis._
 import com.redis.serialization._
 import Parse.Implicits.parseLong
 
@@ -13,7 +12,7 @@ case class DeviceToken(appKey: String, value: String, lastRegistrationDate: Date
 
 object DeviceToken extends RedisConnection {
 
-  def findAllByAppKey(appKey: String, limit: Option[(Int, Int)] = None) = {
+  def findAllByAppKey(appKey: String, limit: Option[(Int, Int)] = None): List[DeviceToken] = {
     def iterate(result: Iterable[Option[String]], acc: List[DeviceToken]): List[DeviceToken] = result match {
       case Some(value) :: Some(time) :: rest => {
         iterate(rest, DeviceToken(appKey, value, new Date(time.toLong)) :: acc)
@@ -27,9 +26,9 @@ object DeviceToken extends RedisConnection {
     result map (iterate(_, List())) getOrElse List()
   }
 
-  def findByAppKeyAndValue(appKey: String, value: String) =
+  def findByAppKeyAndValue(appKey: String, value: String): Option[DeviceToken] =
     redis.get("device_token:" + appKey + ":" + value.toUpperCase) map { time =>
-      Some(DeviceToken(appKey, value, new Date(time.toLong)))
+      Some(DeviceToken(appKey, value, new Date(time)))
     } getOrElse None
 
   def countAllByAppKey(appKey: String): Long =

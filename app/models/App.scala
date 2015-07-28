@@ -80,6 +80,12 @@ object App extends RedisModel {
     case _ => None
   }
 
+  def delete(key: String): Boolean = {
+    App.findByKey(key).map(app => {
+      app.delete
+    }).getOrElse(false)
+  }
+
   def create(userId: Long, name: String, appMode: Int, debugMode: Boolean, iosCertPassword: Option[String], gcmApiKey: Option[String]): Option[String] = {
     val key = RandomGenerator.generateKey(22)
     val secret = RandomGenerator.generateSecret(22)
