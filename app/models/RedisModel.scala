@@ -3,14 +3,12 @@ package models
 import com.redis._
 
 trait RedisConnection {
-
   val redis = new RedisClient("localhost", 6379)
-
 }
 
 trait RedisModel extends RedisConnection {
 
-  def createOrUpdateHash(key: String, hash: Map[String, Any]) = {
+  def createOrUpdateHash(key: String, hash: Map[String, Any]): Boolean = {
     val noneFields = noneFieldsFromMap(hash)
     val valuesHash = valuesMapFromMap(hash)
 
